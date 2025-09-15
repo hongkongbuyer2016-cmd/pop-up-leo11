@@ -1,7 +1,7 @@
 const holes = document.querySelectorAll('.hole');
 const scoreBoard = document.getElementById('score');
 const levelBoard = document.getElementById('level');
-const timerBoard = document.getElementById('timer'); // 新增計時器元素
+const timerBoard = document.getElementById('timer');
 const startBtn = document.getElementById('startBtn');
 const hammer = document.getElementById('hammer');
 const bonkSound = document.getElementById('bonkSound');
@@ -16,8 +16,8 @@ let level = 1;
 let moleSpeed = 1200;
 let bombChance = 0.3;
 let starChance = 0;
-let time = 45; // **每關時間為 45 秒**
-let countdown; // 儲存計時器 ID
+let time = 45;
+let countdown;
 
 function randomTime(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -67,7 +67,6 @@ function startLevel() {
   time = 45;
   timerBoard.textContent = `時間: ${time}`;
   
-  // 每一秒鐘更新一次計時器
   countdown = setInterval(() => {
     time--;
     timerBoard.textContent = `時間: ${time}`;
@@ -96,17 +95,16 @@ function startGame() {
   startBtn.disabled = true;
   peep();
   startLevel();
-  bgm.play();
+  bgm.play(); // 確保遊戲剛開始時，背景音樂會播放
 }
 
 function checkLevelUp() {
-  // **修正：過關分數以倍數計分**
   const scoreGoal = 5 * Math.pow(2, level - 1);
 
   if (score >= scoreGoal && level < 15) {
     level++;
     levelBoard.textContent = `關卡: ${level}`;
-    alert(`恭喜你！進入第 ${level} 關！目標分數：${scoreGoal * 2}`);
+    alert(`恭喜你！進入第 ${level} 關！目標分數：${5 * Math.pow(2, level-1)}`);
     
     moleSpeed = Math.max(200, moleSpeed - 50); 
     bombChance = Math.min(0.8, bombChance + 0.05); 
@@ -115,14 +113,15 @@ function checkLevelUp() {
       starChance = Math.min(0.2, starChance + 0.05);
     }
     
-    // **過關後重啟計時器**
     stopLevel();
     startLevel();
+    bgm.play(); // **修正：過關後重新播放背景音樂**
     
   } else if (score >= scoreGoal && level === 15) {
       alert("恭喜你！你已經完成了所有關卡！");
       stopLevel();
       startBtn.disabled = false;
+      bgm.pause(); // 遊戲結束時停止音樂
   }
 }
 
@@ -162,7 +161,6 @@ function bonk(e) {
   }
   
   scoreBoard.textContent = `分數: ${score}`;
-  // 每次得分都檢查是否過關
   const scoreGoal = 5 * Math.pow(2, level - 1);
   if (score >= scoreGoal) {
     checkLevelUp();
@@ -185,4 +183,5 @@ document.addEventListener('touchend', e => {
   hammer.style.display = "none";
 });
 
+startBtn.addEventListener('click', startGame);
 startBtn.addEventListener('click', startGame);
